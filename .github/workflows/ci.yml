@@ -29,18 +29,21 @@ jobs:
       - name: Run Tests
         run: cargo test --all
 
-      - name: Run Coverage
-        run: cargo llvm-cov --workspace --lcov --output-path lcov.info
+      - name: Run Coverage and Generate Report
+        run: |
+          cargo llvm-cov --workspace --all-features \
+            --ignore-filename-regex='/.cargo/' \
+            --lcov --output-path lcov.info
+
+      - name: Summarize and check coverage
+        run: |
+          set -e
+          PERCENT=$(cargo llvm-cov --summary-only | grep 'Lines:' | awk '{print $2}' | sed 's/%//')
+          echo "Coverage: ${PERCENT:-0}%"
+          [ "$(echo "${PERCENT:-0} >= 80" | bc)" -eq 1 ] || exit 1
 
       - name: Upload Coverage Report
         uses: codecov/codecov-action@v3
         with:
           files: ./lcov.info
           token: ${{ secrets.CODECOV_TOKEN }} # Optional if your repo is public
-
-      - name: Fail if coverage below threshold
-        run: |
-          set -e
-          PERCENT=$(cargo llvm-cov --summary-only | grep 'Lines:' | awk '{print $2}' | sed 's/%//')
-          echo "Coverage: ${PERCENT:-0}%"
-          [ "$(echo "${PERCENT:-0} >= 80" | bc)" -eq 1 ] || exit 1

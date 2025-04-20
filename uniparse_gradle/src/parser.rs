@@ -489,6 +489,35 @@ mod tests {
     }
 
     #[test]
+    fn test_multi_args_parsing() {
+        let input = r#"
+        options "opt1" level "debug"
+    "#;
+
+        let tokens = tokenize(input);
+        let (block, _) = parse_tokens(&tokens, 0).unwrap();
+
+        if let DSLValue::MultiArgs(args) = block.entries.get("options").unwrap() {
+            assert_eq!(args.get("value").and_then(DSLValue::as_str), Some("opt1"));
+            assert_eq!(args.get("level").and_then(DSLValue::as_str), Some("debug"));
+        } else {
+            panic!("Expected MultiArgs DSLValue");
+        }
+    }
+
+    #[test]
+    fn test_empty_function_call() {
+        let input = r#"deploy()"#;
+        let tokens = tokenize(input);
+        let (block, _) = parse_tokens(&tokens, 0).unwrap();
+
+        match block.entries.get("deploy").unwrap() {
+            DSLValue::FunctionCall(args) => assert!(args.is_empty()),
+            _ => panic!("Expected empty function call"),
+        }
+    }
+
+    #[test]
     fn test_strip_comments() {
         let input = r#"
         plugins {
@@ -499,5 +528,19 @@ mod tests {
         let stripped = strip_comments(input);
         assert!(!stripped.contains("//"));
         assert!(stripped.contains("id \"java\""));
+    }
+
+    #[test]
+    #[should_panic(expected = "Unexpected character in input: $")]
+    fn test_unexpected_char_panics() {
+        let _ = tokenize("invalid$char");
+    }
+
+    #[test]
+    fn test_display_output() {
+        let block = DSLBlock::from_str(sample_input()).unwrap();
+        let output = format!("{}", block);
+        assert!(output.contains("mainClassName"));
+        assert!(output.contains("buildDir"));
     }
 }
