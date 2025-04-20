@@ -40,6 +40,7 @@ jobs:
 
       - name: Fail if coverage below threshold
         run: |
+          set -e
           PERCENT=$(cargo llvm-cov --summary-only | grep 'Lines:' | awk '{print $2}' | sed 's/%//')
-          echo "Coverage: $PERCENT%"
-          [ "$(echo "$PERCENT >= 80" | bc)" -eq 1 ] || exit 1
+          echo "Coverage: ${PERCENT:-0}%"
+          [ "$(echo "${PERCENT:-0} >= 80" | bc)" -eq 1 ] || exit 1
