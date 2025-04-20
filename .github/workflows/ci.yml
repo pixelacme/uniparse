@@ -29,6 +29,9 @@ jobs:
       - name: Run Tests
         run: cargo test --all
 
+      - name: Use nightly toolchain
+        run: rustup override set nightly
+
       - name: Run Coverage and Generate Report
         run: |
           cargo llvm-cov --workspace --all-features \
