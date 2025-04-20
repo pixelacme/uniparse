@@ -1,8 +1,3 @@
-//! # uniparse_zon
-//!
-//! A lightweight `.zon` parser and serializer for Zig-style package definitions.
-//!
-//! ## Example
 //! ```rust
 //! use uniparse_zon::{ZonFile, RootZon, ParsedFile};
 //!
@@ -17,3 +12,4 @@ mod parser;
 
 pub use model::{Dependency, RootZon, ZonFile, ZonValue};
 pub use parser::parse_zon;
+pub use uniparse_core::ParsedFile;
