@@ -1,0 +1,64 @@
+name: Publish Crates
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    name: Publish workspace crates
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          rust-version: stable
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          cargo install cargo-workspaces
+
+      - name: Cache Cargo Registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache Cargo Index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-git-
+
+      - name: Show release tag
+        run: echo "Using release tag ${{ github.event.release.tag_name }}"
+
+      - name: Determine Changed Crates
+        id: changed
+        run: |
+          CHANGED=$(cargo workspaces changed --since ${{ github.event.release.tag_name }} --json | jq -r 'join(",")')
+          echo "changed=${CHANGED}"
+          echo "changed=${CHANGED}" >> $GITHUB_OUTPUT
+
+      - name: Publish workspace crates
+        run: |
+          cargo workspaces publish \
+            --yes \
+            --from-git \
+            --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      # - name: Publish changed crates
+      #   if: ${{ steps.changed.outputs.changed && steps.changed.outputs.changed != '' }}
+      #   run: |
+      #     cargo workspaces publish \
+      #       --yes \
+      #       --from-git \
+      #       --token ${{ secrets.CARGO_REGISTRY_TOKEN }}

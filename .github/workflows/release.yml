@@ -1,0 +1,32 @@
+name: Manual Version Bump & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Type of bump (patch, minor, major)"
+        required: true
+        default: "patch"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Install cargo-release
+        run: cargo install cargo-release
+
+      - name: Bump version, tag, and push
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          cargo release ${{ github.event.inputs.bump }} --execute
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.bump.outputs.version }}

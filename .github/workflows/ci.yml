@@ -1,0 +1,49 @@
+name: CI + Publish Crates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  release:
+    types: [published]
+
+jobs:
+  test:
+    name: Test All Crates
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          rust-version: stable
+
+      - name: Install cargo-outdated
+        run: cargo install cargo-outdated
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: Run Tests
+        run: cargo test --all
+
+      - name: Run Coverage and Generate Report
+        run: |
+          cargo llvm-cov --workspace --all-features \
+            --ignore-filename-regex='/.cargo/' \
+            --lcov --output-path lcov.info
+
+      # - name: Summarize and check coverage
+      #   run: |
+      #     set -e
+      #     PERCENT=$(cargo llvm-cov --summary-only | grep 'Lines:' | awk '{print $2}' | sed 's/%//')
+      #     echo "Coverage: ${PERCENT:-0}%"
+      #     [ "$(echo "${PERCENT:-0} >= 80" | bc)" -eq 1 ] || exit 1
+
+      - name: Upload Coverage Report
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }} # Optional if your repo is public

@@ -1,0 +1,26 @@
+WHITESPACE = _{ " " | "\t" | NEWLINE }
+NEWLINE = _{ "\r\n" | "\n" }
+COMMENT = _{ "//" ~ (!NEWLINE ~ ANY)* }
+
+file = { SOI ~ struct_object ~ EOI }
+
+struct_object = { "."? ~ "{" ~ (COMMENT | field)* ~ "}" }
+
+field = { dot_field ~ "=" ~ value ~ ","? }
+
+dot_field = { "." ~ identifier }
+
+identifier = @{ (ASCII_ALPHANUMERIC | "_")+ }
+
+value = _{
+      string
+    | struct_object
+    | array
+    | boolean
+}
+
+string = @{ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
+
+array = { "[" ~ (string ~ ("," ~ string)*)? ~ "]" }
+
+boolean = { "true" | "false" }

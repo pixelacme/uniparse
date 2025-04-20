@@ -1,0 +1,15 @@
+[package]
+name = "uniparse_zon"
+version = "0.1.0"
+edition = "2024"
+authors = ["pixelacme"]
+publish = true
+description = "Parser for Zig-style .zon files"
+license = "MIT"
+homepage = "https://github.com/pixelacme/uniparse/uniparse_zon"
+repository = "https://github.com/pixelacme/uniparse"
+keywords = ["rust", "zon", ".zon", "parser", "dependencies"]
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }

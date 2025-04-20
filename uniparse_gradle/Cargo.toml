@@ -1,0 +1,14 @@
+[package]
+name = "uniparse_gradle"
+version = "0.1.0"
+edition = "2024"
+publish = true
+authors = ["pixelacme"]
+description = "Parse gradle files into structured rust data"
+license = "MIT"
+homepage = "https://github.com/pixelacme/uniparse/uniparse_gradle"
+repository = "https://github.com/pixelacme/uniparse"
+keywords = ["rust", "gradle", "parser", "dependencies"]
+
+[dependencies]
+serde = { workspace = true }

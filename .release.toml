@@ -1,0 +1,4 @@
+sign-commit = false
+push = true
+tag-prefix = "v"
+consolidate-commits = true
