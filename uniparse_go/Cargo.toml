@@ -1,0 +1,16 @@
+[package]
+name = "uniparse_gomod"
+version = "0.1.0"
+edition = "2024"
+publish = true
+authors = ["pixelacme"]
+description = "Parse go.mod files into structured rust data"
+license = "MIT"
+repository = "github.com/pixelacme/uniparse"
+keywords = ["rust", "go", "gomod", "parser", "dependencies"]
+categories = ["parser", "parser-implementations", "dev-tools"]
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+uniparse_core = { path = "../uniparse_core" }

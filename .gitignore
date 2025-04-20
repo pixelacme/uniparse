@@ -1,0 +1,27 @@
+# Rust/Cargo
+/target
+**/target/
+**/*.rs.bk
+Cargo.lock
+!*/Cargo.lock
+/.cargo/
+
+# Build/IDE tools
+**/*.dSYM
+**/*.DS_Store
+**/*.log
+**/*.tmp
+
+# IDEs & editors
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs (CLion, IntelliJ, etc.)
+.idea/
+*.iml
+
+# Others
+*.swp
+*.swo
+*~

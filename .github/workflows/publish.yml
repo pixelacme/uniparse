@@ -1,0 +1,74 @@
+name: Publish Crates
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        crate: [uniparse-zon, uniparse-gradle, uniparse-gomod]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions/setup-rust@v1
+
+      - name: Dry run ${{ matrix.crate }}
+        working-directory: ./${{ matrix.crate }}
+        run: cargo publish --dry-run
+
+  publish:
+    name: Publish individual crates
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions/setup-rust@v1
+        with:
+          rust-version: stable
+
+      - name: Install cargo-workspaces
+        run: cargo install cargo-workspaces
+
+      - name: Cache Cargo Registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache Cargo Index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-git-
+
+      - name: Determine Changed Crates
+        id: changed
+        run: |
+          CHANGED=$(cargo workspaces changed --since-tag v${{ github.event.release.tag_name }} --json | jq -r '.crates | join(",")')
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+        
+      - name: Publish uniparse_go
+        working-directory: ./uniparse_go
+        if: contains(steps.changed.outputs.changed, 'uniparse_go')
+        run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      
+      - name: Publish uniparse_gradle
+        working-directory: ./uniparse_gradle
+        if: contains(steps.changed.outputs.changed, 'uniparse_gradle')
+        run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      
+      - name: Publish uniparse_zon
+        working-directory: ./uniparse_zon
+        if: contains(steps.changed.outputs.changed, 'uniparse_zon')
+        run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }}

@@ -1,0 +1,45 @@
+name: CI + Publish Crates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  release:
+    types: [published]
+
+jobs:
+  test:
+    name: Test All Crates
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions/setup-rust@v1
+        with:
+          rust-version: stable
+
+      - name: Install cargo-outdated
+        run: cargo install cargo-outdated
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: Run Tests
+        run: cargo test --all --locked
+
+      - name: Run Coverage
+        run: cargo llvm-cov --workspace --lcov --output-path lcov.info
+
+      - name: Upload Coverage Report
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }} # Optional if your repo is public
+
+      - name: Fail if coverage below threshold
+        run: |
+          PERCENT=$(cargo llvm-cov --summary-only | grep 'Lines:' | awk '{print $2}' | sed 's/%//')
+          echo "Coverage: $PERCENT%"
+          [ "$(echo "$PERCENT >= 80" | bc)" -eq 1 ] || exit 1
