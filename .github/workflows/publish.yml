@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        crate: [uniparse-zon, uniparse-gradle, uniparse-gomod]
+        crate: [uniparse-zon, uniparse-gradle, uniparse-go]
 
     steps:
       - uses: actions/checkout@v4

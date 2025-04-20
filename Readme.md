@@ -28,7 +28,7 @@ Add any individual parser to your `Cargo.toml`:
 [dependencies]
 uniparse-zon = "1.0"
 uniparse-gradle = "1.0"
-uniparse-gomod = "1.0"
+uniparse-go = "1.0"
 ```
 
 ## 🧪 Testing + Coverage

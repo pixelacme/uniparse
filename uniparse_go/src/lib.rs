@@ -7,7 +7,11 @@
 //! # Example
 //!
 //! ```rust
-//! use uniparse_gomod::parse_str;
+//! //! #[cfg(doctest)]
+//! use uniparse_go::parse_str;
+//!
+//! #[cfg(not(doctest))]
+//! use crate::parse_str;
 //!
 //! let gomod = parse_str(r#"
 //!     module example.com/m
