@@ -175,7 +175,7 @@ fn parse_value(tokens: &[ZonToken], mut i: usize) -> Result<(ZonValue, usize), S
             Ok((ZonValue::Object(object), i + 1))
         }
 
-        Some(ZonToken::String(s)) => {
+        Some(ZonToken::String(_s)) => {
             // let mut values = Vec::new();
             // while let Some(ZonToken::String(s)) = tokens.get(i) {
             //     values.push(ZonValue::String(s.clone()));

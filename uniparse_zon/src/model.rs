@@ -217,6 +217,7 @@ impl ZonValue {
         }
     }
 
+    #[allow(dead_code)]
     fn as_list(&self) -> Option<&Vec<ZonValue>> {
         match self {
             ZonValue::List(list) => Some(list),
@@ -224,6 +225,7 @@ impl ZonValue {
         }
     }
 
+    #[allow(dead_code)]
     fn as_object(&self) -> Option<&HashMap<String, ZonValue>> {
         match self {
             ZonValue::Object(obj) => Some(obj),
