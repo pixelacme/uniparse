@@ -7,13 +7,9 @@
 //! # Example
 //!
 //! ```rust
-//! //! #[cfg(doctest)]
-//! use uniparse_go::parse_str;
+//! use uniparse_go::{GoDependency, GoMod, ParseError};
 //!
-//! #[cfg(not(doctest))]
-//! use crate::parse_str;
-//!
-//! let gomod = parse_str(r#"
+//! let gomod = GoMod::parse_str(r#"
 //!     module example.com/m
 //!     go 1.20
 //!     require github.com/foo/bar v1.2.3
